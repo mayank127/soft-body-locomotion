@@ -1,0 +1,6 @@
+external/VegaFEM-v2.0
+soft-body
+obj/
+*.o
+*.a
+
