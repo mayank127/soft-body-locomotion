@@ -13,7 +13,7 @@ SRCDIR = $(PROJECT_ROOT)
 OBJDIR = $(PROJECT_ROOT)/obj
 
 INCLUDES = -I external/VegaFEM-v2.0/libraries/include/
-LIBS =  -lcorotationalLinearFEM -lvolumetricMesh -lsparseMatrix -lpolarDecomposition -lminivector -lGL -lglut -L external/VegaFEM-v2.0/libraries/lib/
+LIBS =  -lcorotationalLinearFEM -lvolumetricMesh -lsparseMatrix -lpolarDecomposition -lminivector -lrenderVolumetricMesh -lopenGLHelper -lGL -lglut -L external/VegaFEM-v2.0/libraries/lib/
 TARGET = soft-body
 
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
@@ -24,7 +24,7 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 all: setup $(TARGET)
 
-setup: vega_lib
+setup: vega_lib volume_render
 	@$(ECHO) "Setting up compilation.."
 	@mkdir -p obj
 
@@ -37,6 +37,9 @@ $(TARGET): $(OBJS)
 vega_lib: external/VegaFEM-v2.0.zip
 	@cd external; unzip -qo VegaFEM-v2.0.zip
 	@cd external/VegaFEM-v2.0/; ./build
+
+volume_render: vega_lib external/VegaFEM-v2.0/libraries/renderVolumetricMesh/renderVolumetricMesh.h
+	@cd external/VegaFEM-v2.0/libraries/renderVolumetricMesh/; make
 
 $(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@$(PRINTF) "Compiling $(notdir $<)\n"

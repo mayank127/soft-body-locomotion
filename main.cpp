@@ -5,6 +5,7 @@
 #include "sparseMatrix.h"
 #include "muscle.h"
 #include "generateMassMatrix.h"
+#include "renderVolumetricMesh.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -19,6 +20,7 @@ TetMesh * tetMesh = NULL;
 vector<muscle> muscles;
 vector< vector<double> > elongations;
 CorotationalLinearFEM * corotationalLinearFEM;
+RenderVolumetricMesh renderVolumetricMesh;
 
 SparseMatrix * stiffnessMatrix;
 SparseMatrix * massMatrix_sparse;
@@ -50,20 +52,20 @@ void drawTriangle(Vec3d a, Vec3d b, Vec3d c){
 
 void draw() {
 	int numEle = tetMesh->getNumElements();
-	for(int i=0;i<numEle; i++){
+	/*for(int i=0;i<numEle; i++){
 		Vec3d & a = *(tetMesh->getVertex(i, 0));
 		Vec3d & b = *(tetMesh->getVertex(i, 1));
 		Vec3d & c = *(tetMesh->getVertex(i, 2));
 		Vec3d & d = *(tetMesh->getVertex(i, 3));
 		glColor3f(0.0, 1.0, 0.0);
 		drawTriangle(a,b,c);
-		glColor3f(1.0, 1.0, 0.0);
+		//glColor3f(1.0, 1.0, 0.0);
 		drawTriangle(a,c,d);
-		glColor3f(0.0, 1.0, 1.0);
+		//glColor3f(0.0, 1.0, 1.0);
 		drawTriangle(a,d,b);
-		glColor3f(1.0, 0.0, 1.0);
+		//glColor3f(1.0, 0.0, 1.0);
 		drawTriangle(b,d,c);
-	}
+	}*/
 	for (int i=0;i<muscles.size();i++) {
 		for (int j=0;j<muscles[i].muscle_segments.size();j++) {
 			Vec3d & p = *(tetMesh->getVertex(muscles[i].muscle_segments[j].centerIndex));
@@ -96,6 +98,7 @@ void display( void )
 	glPushMatrix();
 		glScalef(3,3,3);
 		draw();
+		renderVolumetricMesh.Render(tetMesh);
 	glPopMatrix();
 	glutSwapBuffers();
 }
@@ -376,7 +379,7 @@ int main (int argc, char *argv[])
 	for(int i=0;i<3*numVertices;i+=3){
 		external_force[i+1] = -0.1;
 	}
-	// external_force[10*3+1] = 1;
+	external_force[200*3+0] = 10;
 	// external_force[207 * 3 + 1] = -100;
 	// for(int i=0;i<3*numVertices/2; i+=3){
 	// 	external_force[i] = -1;
@@ -396,6 +399,7 @@ int main (int argc, char *argv[])
 	elongations.push_back(vector<double>(1,0.5));
 	elongations.push_back(vector<double>(1,0.5));
 
+	renderVolumetricMesh = RenderVolumetricMesh();
 
 	glutTimerFunc(1, update_velocity, 1);
 	glutDisplayFunc( display );

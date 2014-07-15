@@ -3,4 +3,6 @@ soft-body
 obj/
 *.o
 *.a
+.cproject
+.project
 
